@@ -11,14 +11,20 @@
 
 \setcounter{tocdepth}{3}
 
+
 \logo{cule.jpg}
 \cover{cover.jpg}
  
+\definecolor{codebg}{rgb}{0.8,0.8,0.8}
+        
 % 本文档命令
 \usepackage{array}
 \usepackage{enumitem}
+\usepackage{minted}
+\usepackage{mdframed}
 \newcommand{\ccr}[1]{\makecell{{\color{#1}\rule{1cm}{1cm}}}}
 
+\setmintedinline{bgcolor=codebg}
 % 修改标题页的橙色带 
 % \definecolor{customcolor}{RGB}{32,178,170}
 % \colorlet{coverlinecolor}{customcolor}
@@ -67,6 +73,7 @@ It supports batch scripts and usually the file is with .bat extension.
     \centering{Cons} 
     \begin{itemize}[leftmargin=*]
         \item Batch scripting language is really outdated and hard to write more complex stuff
+        \item No command history search
     \end{itemize}
 \end{minipage}%
 
@@ -91,6 +98,7 @@ when working with system administration. For developer work it might be an overk
     \begin{itemize}[leftmargin=*]
         \item Available on all Windows systems
         \item Better integration with Windows functionalities
+        \item Has command history search (with F8 key)
     \end{itemize}
 \end{minipage}%
 \begin{minipage}[t]{0.5\textwidth}%
@@ -106,6 +114,25 @@ when working with system administration. For developer work it might be an overk
     \includegraphics[width=0.6\textwidth]{images/powershell.png}
     \caption{PowerShell\label{fig:PowerShell}}
 \end{figure}
-ffhgf
+
+\subsection{Linux/Mac terminals/shells}
+
+Linux and Mac have much bigger choice of terminals. Terminal refers to a program that allows you to run
+programs which are known as shells. Shells come in lots of varieties sh, bash, ksh, csh, zsh\dots. 
+Linux has many command line programs that allow you to manipulate output of commands and 
+offers a lot for power users.
+
+
+\section{Package managers} 
+
+Package managers can be used to install additional software on your PC. They usully automate process of 
+downloading, installing and configuring software. Later it also helps with keeping the installed software 
+up to date or with removal. 
+
+\subsection{Chocolatey}
+
+Chocolatey is most prominent Windows package manager. It can be downloaded from \href{https://chocolatey.org/}{https://chocolatey.org/}.
+Searching for packages is done with \mintinline{bat}{choco search postgresql} 
+and installation with \mintinline{bat}{choco install postgresql} will install Postgres.
 
 \end{document}
