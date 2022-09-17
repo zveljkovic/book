@@ -23,7 +23,8 @@
 \usepackage{minted}
 \usepackage{mdframed}
 \newcommand{\ccr}[1]{\makecell{{\color{#1}\rule{1cm}{1cm}}}}
-
+\newcommand{\ci}{\mintinline{bat}}
+\newcommand{\bi}[1]{\textit{\textbf{#1}}}
 \setmintedinline{bgcolor=codebg}
 % 修改标题页的橙色带 
 % \definecolor{customcolor}{RGB}{32,178,170}
@@ -129,10 +130,137 @@ Package managers can be used to install additional software on your PC. They usu
 downloading, installing and configuring software. Later it also helps with keeping the installed software 
 up to date or with removal. 
 
-\subsection{Chocolatey}
+\begin{itemize}[leftmargin=*]
+    \item Chocolatey is most prominent Windows package manager. It can be downloaded from \href{https://chocolatey.org/}{https://chocolatey.org/}.
+    Searching for packages is done with \mintinline{bat}{choco search postgresql} 
+    and installation with \mintinline{bat}{choco install postgresql} will install Postgres.
+    \item Homebrew is a Mac OS X package manager written in Ruby. 
+    It can be downloaded from \href{https://brew.sh}{https://brew.sh}.
+    Command \mintinline{bat}{brew search postgres}
+    is used to search for package while \mintinline{bat}{brew install postgresql} to install a package.
+    \item Linux has many package managers and preferred way is to use package manager
+    that comes with operating system.
+\end{itemize}
 
-Chocolatey is most prominent Windows package manager. It can be downloaded from \href{https://chocolatey.org/}{https://chocolatey.org/}.
-Searching for packages is done with \mintinline{bat}{choco search postgresql} 
-and installation with \mintinline{bat}{choco install postgresql} will install Postgres.
+\chapter{NestJS application recommendations}
+
+\section{NestJS}
+
+I couldnt explain it better then the words of the author "Nest (NestJS) is a framework for building 
+efficient, scalable Node.js server-side applications.
+It uses progressive JavaScript, is built with and fully supports
+TypeScript (yet still enables developers to code in pure JavaScript)
+and combines elements of OOP (Object Oriented Programming), 
+FP (Functional Programming), and FRP (Functional Reactive Programming)."
+
+The documentation is found on \href{https://docs.nestjs.com/} where you can 
+read all about framework components. Some of the components are  
+not up to task and in further sections we will focus on good and bad 
+sides of available components and some alternatives.
+
+\section{Environments}
+Modern apps usually run in multiple environments. My recommendation 
+for environments is with code name in parenthesis.
+
+\begin{itemize}
+    \item Local development environment (\bi{a})
+    \item Local testing environment (\bi{b})
+    \item Public development environment (\bi{d})
+    \item Public stable development environment (\bi{s})
+    \item CI testing environment (\bi{t})
+    \item Public quality assurance environment (\bi{q})
+    \item Public production environment (\bi{p})
+\end{itemize}
+
+\subsection{Local development environment}
+Local development environment is pretty obvious as each developer 
+is running the application on development machine.
+Code name to be used for this environment is \bi{a} which as a letter
+represents first letter in alphabet so this environment represents 
+first step in the application development.
+
+\subsection{Local testing environment}
+Local testing environment (\bi{b}) is where developer runs tests on development
+machine. This environment is necessery to isolate testing of the app
+completly from local development environment. Without this isolation
+data that has been entered during development could influence
+test running. We usually use same variables
+as \bi{a} env but we usually want to change external dependencies
+like database/queues/Kafka/storage so test runs are properly isolated.
+
+\subsection{Public development environment}
+Public development environment is the environment which contains the
+latest application code. It is configured to be automatically built 
+from the \bi{develop} branch. This environment is meant to be 
+broken/reset at any time. It is also first public environment for use 
+mostly by developers.
+
+\subsection{Public stable development environment}
+Public stable development environment \bi{s} is the environment that is 
+manually updated. When team is happy with the state of \bi{d} environment
+they can promote it to this environment. This allows team leads 
+to test the app without interuptions that would come if they used \bi{d} 
+environment.
+
+\subsection{CI testing environment}
+CI testing environment is used during the PR verifications in the build
+pipelines. This is necessary for same reasons as local testing environment,
+just on the public side. 
+
+\subsection{Public quality assurance environment}
+Public quality assurance environment \bi{q} is environment meant
+for external evaluation. When all issues identified in \bi{s} environment
+are fixed and team lead is happy with it's state, this build can be promoted
+to \bi{q} environment. This environment should be same in specs as 
+public production environment, so it can be also used as database
+migration verification or as performnce test target. 
+
+\subsection{Public production environment}
+Public production environment \bi{p} is environment that is available to the 
+users of the application. This makes it last step in build - release cycle.
+As real users are using it this environment should be under constant monitoring.
+
+\section{Environment zones}
+All of the enivornments can be grouped in production and non-production zones.
+The app code can then provide developers with:
+\begin{itemize}
+    \item More information about errors for example by outputing
+ stack traces, displaying error data, and various other info which should be
+ hidden from the real users.
+    \item Improve testability by including features to login as certain type
+    of users, commands that will precreate certain data sets, etc\dots
+    \item Distinguish between seeding production data and developer data.
+\end{itemize} 
+
+
+\section{Application Configuration}
+
+Application configuration in modern development is unescapable. NestJS 
+offers a component \bi{ConfigService} which is using \bi{dotenv} package internally.
+What we get is a way to load .env environment file and access the variables
+defined in environment.
+
+What we are missing is:
+\begin{itemize}
+    \item Checking that all required variables are supplied
+    \item That variables conform to the expected type (configuration schema)
+    \item Ability to use multiple .env files so that you can easily configure 
+    local development environment (\bi{a}) and local testing environment (\bi{b})
+    for example by having \bi{.env.b} file overriding database name from \bi{.env} 
+    used by local development environment.
+    \item Type safety as we need to use string identifiers when getting the 
+    values
+\end{itemize}
+
+Package \href{https://www.npmjs.com/package/convict}{convict} has almost all
+of the above but has a requirement that each setting has default value 
+which will not fail the startup if required variable is not found in 
+environment variables.
+
+\section*{ZeddyConfig}
+asdfasf
+
+
+
 
 \end{document}
