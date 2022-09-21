@@ -257,9 +257,49 @@ of the above but has a requirement that each setting has default value
 which will not fail the startup if required variable is not found in 
 environment variables.
 
-\section*{ZeddyConfig}
-asdfasf
+\section*{Zeddy Config}
+Zeddy Config is my \href{https://www.npmjs.com/package/zeddy-config}{library} 
+heavily inspired by \href{https://www.npmjs.com/package/convict}{convict} but offers 
+type safety without default values and is offering just enough functionality
+for any app. This package also provides variable loading from the \bi{.env} 
+and \bi{.env.env-name} files with the \bi{dotenvize} method. With this simple
+packages we cover all missing elements for good conifg.
 
+\begin{minted}{js}
+import { configz, dotenvize } from "zeddy-config";
+
+dotenvize();
+
+export const config = configz({
+  env: {
+    description: "Running environment",
+    envVar: "NODE_ENV",
+    type: "string"
+  },
+  server: {
+    description: "Server info",
+    type: "object",
+    properties: {
+      port: {
+        description: "Server port",
+        envVar: "SERVER_PORT",
+        type: "int",
+        validator: (port) => {
+          return port === 3000;
+        }
+      },
+      host: {
+        description: "Server host",
+        envVar: "SERVER_HOST",
+        type: "string"
+      },
+    }
+  }
+});
+
+// resulting config interface is {env: string; server: {port: number; host: string}}
+}
+\end{minted}
 
 
 
