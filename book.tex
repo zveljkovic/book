@@ -263,9 +263,15 @@ heavily inspired by \href{https://www.npmjs.com/package/convict}{convict} but of
 type safety without default values and is offering just enough functionality
 for any app. This package also provides variable loading from the \bi{.env} 
 and \bi{.env.env-name} files with the \bi{dotenvize} method. With this simple
-packages we cover all missing elements for good conifg.
+packages we cover all missing elements for good conifg:
+\begin{itemize}
+    \item Single method load the environment variables into JS variable.
+    \item Validation of the configuration schema.
+    \item Full type safety as schema type propery is trasferred to config object properties.
+    \item It also has additional method to load multiple .env files (\bi{dotenvize}).
+\end{itemize}
 
-\begin{minted}{js}
+\begin{minted}{javascript}
 import { configz, dotenvize } from "zeddy-config";
 
 dotenvize();
