@@ -1,0 +1,43 @@
+To better understand the available architectural guides in NestJS we need to shortly introduce ourselves with
+core building blocks of NestJS\@.
+
+\subsection{NestJS Modules}\label{subsec:nestjs-modules}
+
+NestJS has is able to modularize the code with Module classes.
+Each application must have at least one module but can have many modules.
+These modules can contain multiple classes, and they have an interface with which we can specify
+what is available from the modules importing it.
+This allows us to have separation of concerns, by creating self-sufficient modules with public interfaces
+(by specifying public classes in exports field of module).
+For example, we can create UserModule that will provide UserService class to any module importing UserModule.
+Parent modules will be able to get the UserService object via dependency injection system, but they couldn't
+get the ``private'' classes used within module like UserRepository, UserEmailService, UserController and others unless
+explicitly exported from the module.
+This allows to hide internal implementation of the module and force usage of exported classes
+to interact with this module.
+
+\subsection{NestJS Providers}\label{subsec:nestjs-providers}
+NestJS concept of provider is very large but can be sumarized as a class that can be injected through NestJS dependency
+injection system.
+Many of the NestJS basic classes are providers like services, repositories, helpers, controllers, etc\ldots
+Class can be treated as a provider if it has @Injectable annotation and is defined in modules provider field.
+
+\subsection{NestJS Controllers}\label{subsec:nestjs-controllers}
+
+NestJS has built-in support for Controllers.
+They are objects that define endpoints that allow the user to interact with the application.
+For each endpoint controllers specify which URL, and HTTP method are required to trigger it.
+Also, controllers serve as a place to define expected request parameters, validation, authorization, and most importantly
+to trigger the specific code to handle that request.
+
+\subsection{NestJS Middleware, Exception Filters, Pipes, Guards, Interceptors}\label{subsec:nestjs-others}
+The rest of NestJS components are essentially a way to interact with request before it reaches controller.
+Short explanation of each follow but for more in-depth explanation please read official documentation.
+
+\begin{itemize}
+  \item Middleware - code that runs before the routing.
+  \item Exception filters - code that will allow you to react to unhandled exception from your code.
+  \item Pipes - used for transformation and validation of data before execution of controller.
+  \item Guards - checking if request is allowed to be executed by controller (authentication and authorization).
+  \item Interceptors - wrap controller execution so you can write code that is executed before or after controller execution
+\end{itemize}

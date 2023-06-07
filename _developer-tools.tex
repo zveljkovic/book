@@ -36,18 +36,21 @@ It supports batch scripts and usually the file is with .bat extension.
     \end{itemize}
 \end{minipage}%
 
+%! suppress = FigureNotReferenced
+%! suppress = FigureNotReferenced
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{images/command-prompt}
     \caption{Command Prompt\label{fig:Command Prompt}}
 \end{figure}
 
-Reference for available Command Prompt commands can be found at \href{https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/windows-commands}{Windows Commands}
+Reference for available Command Prompt commands can be found at
+\href{https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/windows-commands}{Windows Commands}
 
 \subsection{PowerShell}\label{subsec:powershell}
 Another shell for Windows systems is called PowerShell, and it is available from Windows 7 or later operating systems.
 Open source version PowerShell Core was released in 2016, and it is based on .Net Core which also made it cross-platform.
-It has better integration with various functionalities available in Windows so it is prefreed choice over Command Prompt
+It has better integration with various functionalities available in Windows, so it is preferred choice to Command Prompt
 when working with system administration.
 For developer work it might be an overkill.
 
@@ -68,6 +71,7 @@ For developer work it might be an overkill.
     \end{itemize}
 \end{minipage}%
 
+%! suppress = FigureNotReferenced
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{images/powershell}
@@ -77,20 +81,20 @@ For developer work it might be an overkill.
 \subsection{Linux/Mac terminals/shells}\label{subsec:linux/mac-terminals/shells}
 
 Linux and Mac have much bigger choice of terminals.
-Terminal refers to a program that allows you to run
-programs which are known as shells. Shells come in lots of varieties sh, bash, ksh, csh, zsh\dots.
-Linux has many command line programs that allow you to manipulate output of commands and
-offers a lot for power users.
+Terminal refers to a program that allows you to run programs which are known as shells.
+Shells come in lots of varieties sh, bash, ksh, csh, zsh\dots.
+Linux has many command line programs that allow you to manipulate output of commands and offers a lot for power users.
 
 
-\section{Package managers}
+\section{Package managers}\label{sec:package-managers}
 
-Package managers can be used to install additional software on your PC. They usully automate process of
-downloading, installing and configuring software. Later it also helps with keeping the installed software
-up to date or with removal.
+Package managers can be used to install additional software on your PC. They usually automate process of
+downloading, installing and configuring software.
+Later it also helps with keeping the installed software up to date or with removal.
 
 \begin{itemize}[leftmargin=*]
-    \item Chocolatey is most prominent Windows package manager. It can be downloaded from \href{https://chocolatey.org/}{https://chocolatey.org/}.
+    \item Chocolatey is the most prominent Windows package manager.
+    It can be downloaded from \href{https://chocolatey.org/}{https://chocolatey.org/}.
           Searching for packages is done with \mintinline{bat}{choco search postgresql}
           and installation with \mintinline{bat}{choco install postgresql} will install Postgres.
     \item Homebrew is a Mac OS X package manager written in Ruby.

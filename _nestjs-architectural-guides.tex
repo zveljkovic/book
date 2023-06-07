@@ -1,0 +1,80 @@
+Depending on the expected size and complexity, application architecture should be designed to maximise productivity,
+and minimise complexity but without sacrificing the maintainability or development of possible future requirements.
+There are various online topics on subject of architecture and their applicability, so we will shortly focus on most
+common types of errors during architecture design.
+
+Over-engineering: this happens when solution is unnecessarily complicated.
+There are many examples of this but most common ones are:
+\begin{itemize}
+  \item designing for multiple databases in agnostic way when 99% of projects never switch the database type (i.e. going from Postgresql to Sql Server).
+  \item using microservice architecture where hidden cost of included complexity on both developer and devops side is not
+  properly compared to the benefits of this approach.
+  \item designing for infinite customisation of the components.
+\end{itemize}
+
+Under-engineering (Hacky): this happens when solution is not using parts for intended purposes but is tried to repurpose
+existing ones in different way (which often fails).
+Some of these are:
+\begin{itemize}
+  \item using database instead of in memory cache.
+  \item using self-made code for distributed task scheduling (please use ZooKeeper).
+  \item using cron jobs instead of proper background task processing.
+\end{itemize}
+
+
+This section will focus on most commonly used architectural practices for building NestJS based backend applications
+in increasing complexity.
+
+\section{Arch: As Simple As It Gets}\label{sec:arch-as-simple-as-it-gets}
+
+The most basic setup we can have is to have one module that has one controller defined.
+All the code gets written in the controller method.
+This is only suitable for quick POC maybe when testing new libraries and later thrown away.
+But even then it is a questionable practice as it might be easier to test it in main project.
+
+\section{Arch: One module project based with services based on db entities}\label{sec:arch-om-db}
+
+One module project will have no modularization but can have multiple controllers, services and other NestJS components.
+Modularization is emulated with the folder structure and this works really well for POC or small projects.
+Mainly for smaller projects there is 1:1 correlation between controllers and services.
+Downside of this approach is that availability of each app component may tempt usage of classes that should be private
+if there was proper modularization.
+One example would be to update user directly via UserRepository instead of going through the UserService as it requires
+all attributes to be specified.
+Later, for example if we wanted to send a confirmation email everytime user is updated we would have to find all places
+where UserRepository was used and add code there.
+
+\section{Arch: Multi module project with services based on db entities}\label{sec:arch-mm-db}
+
+An expansion on previous architecture is that now we are using multiple modules properly
+(by forbidding imports of classes that are not exported from modules), but we still have groupings around entities.
+This way we have multiple modules, well-defined public interfaces but if application grows in complexity we may start
+encountering cyclic dependencies.
+Cyclic dependencies mostly happen in services, and reason is that two service require each other to do the job.
+For simplistic example we can say that UserService and WorkService have a cyclic dependency
+when WorkService needs UserService to fetch the user, while UserService in deleteUser method needs WorkService
+to remove all the Work entities for current user.
+
+\section{Arch: Multi module project with services based on Domain Driven Design}\label{sec:arch-mm-ddd}
+
+To solve the previous issue we can try the DDD and model services around business domains, and that might help a bit,
+but when domain interactions become more complex we might still experience the cyclic dependency issue.
+
+\section{Arch: Multi module project with services based on Domain Driven Design plus events}\label{sec:arch-mm-ddd-events}
+
+To fight cyclic dependencies arising from large service classes, and make them independent of other modules we might
+start to utilize internal events.
+By raising events we may handle some cases in parts of other modules.
+For example, in UserService we can use exported class UserEvents to raise UserCreated event, and then the
+EmailService can respond to that event without needing a DI link to UserService.
+This will help greatly in decoupling the modules and making app more maintainable for larger projects.
+
+\begin{tcolorbox}[title=Dependency Injection issues]
+  It becomes obvious at this point that dependencies should be scoped to the point of the usage.
+  Having large service classes that depend on the other big service classes, we will come to the point where we
+  will have to fight with cyclic dependencies.
+  But it's not only that, why do we need to instantiate a service if it is used in only one method.
+  We need a new (old) approach.
+\end{tcolorbox}
+
+

@@ -28,74 +28,52 @@
     \end{itemize}
 
     \subsection{Local development environment}\label{subsec:local-development-environment}
-    Local development environment is pretty obvious as each developer
-    is running the application on development machine.
-    Code name to be used for this environment is \bi{a} which as a letter
-    represents first letter in alphabet so this environment represents
-    first step in the application development.
+    Local development environment is pretty obvious as each developer is running the application on development machine.
+    Code name to be used for this environment is \bi{a} which as a letter represents first letter in alphabet
+    so this environment represents first step in the application development.
 
     \subsection{Local testing environment}\label{subsec:local-testing-environment}
-    Local testing environment (\bi{b}) is where developer runs tests on development
-    machine.
-    This environment is necessary to isolate testing of the app
-    completely from local development environment.
-    Without this isolation
-    data that has been entered during development could influence
-    test running.
+    Local testing environment (\bi{b}) is where developer runs tests on development machine.
+    This environment is necessary to isolate testing of the app completely from local development environment.
+    Without this isolation data that has been entered during development could influence test running.
     We usually use same variables as \bi{a} env, but we usually want to change external dependencies
     like database/queues/Kafka/storage so test runs are properly isolated.
 
     \subsection{Public development environment}\label{subsec:public-development-environment}
-    Public development environment is the environment which contains the
-    latest application code.
-    It is configured to be automatically built
-    from the \bi{develop} branch.
-    This environment is meant to be
-    broken/reset at any time.
-    It is also first public environment for use
-    mostly by developers.
+    Public development environment is the environment which contains the latest application code.
+    It is configured to be automatically built from the \bi{develop} branch.
+    This environment is meant to be broken/reset at any time.
+    It is also first public environment for use mostly by developers.
 
     \subsection{Public stable development environment}\label{subsec:public-stable-development-environment}
-    Public stable development environment \bi{s} is the environment that is
-    manually updated.
-    When team is happy with the state of \bi{d} environment
-    they can promote it to this environment.
-    This allows team leads
-    to test the app without interruptions that would come if they used \bi{d}
-    environment.
+    Public stable development environment \bi{s} is the environment that is manually updated.
+    When team is happy with the state of \bi{d} environment they can promote it to this environment.
+    This allows team leads to test the app without interruptions that would come if they used \bi{d} environment.
 
     \subsection{CI testing environment}\label{subsec:ci-testing-environment}
-    CI testing environment is used during the PR verifications in the build
-    pipelines.
-    This is necessary for same reasons as local testing environment,
-    just on the public side.
+    CI testing environment is used during the PR verifications in the build pipelines.
+    This is necessary for same reasons as local testing environment, just on the public side.
 
     \subsection{Public quality assurance environment}\label{subsec:public-quality-assurance-environment}
-    Public quality assurance environment \bi{q} is environment meant
-    for external evaluation.
-    When all issues identified in \bi{s} environment
-    are fixed and team lead is happy with its state, this build can be promoted
-    to \bi{q} environment.
-    This environment should be same in specs as
-    public production environment, so it can be also used as database
+    Public quality assurance environment \bi{q} is environment meant for external evaluation.
+    When all issues identified in \bi{s} environment are fixed and team lead is happy with its state,
+    this build can be promoted to \bi{q} environment.
+    This environment should be same in specs as public production environment, so it can be also used as database
     migration verification or as performance test target.
 
     \subsection{Public production environment}\label{subsec:public-production-environment}
-    Public production environment \bi{p} is environment that is available to the
-    users of the application.
+    Public production environment \bi{p} is environment that is available to the users of the application.
     This makes it last step in build - release cycle.
     As real users are using it this environment should be under constant monitoring.
-
 
     \section{Environment zones}\label{sec:environment-zones}
     All of the environments can be grouped in production and non-production zones.
     The app code can then provide developers with:
     \begin{itemize}
-        \item More information about errors for example by outputting
-        stack traces, displaying error data, and various other info which should be
-        hidden from the real users.
-        \item Improve testability by including features to log in as certain type
-        of users, commands that will precreate certain data sets, etc\dots
+        \item More information about errors for example by outputting stack traces, displaying error data,
+        and various other info which should be hidden from the real users.
+        \item Improve testability by including features to log in as certain type of users, commands that will
+        precreate certain data sets, etc\dots
         \item Distinguish between seeding production data and developer data.
     \end{itemize}
 
@@ -103,37 +81,29 @@
     \section{Application Configuration}\label{sec:application-configuration}
 
     Application configuration in modern development is inescapable.
-    NestJS
-    offers a component \bi{ConfigService} which is using \bi{dotenv} package internally.
-    What we get is a way to load .env environment file and access the variables
-    defined in environment.
+    NestJS offers a component \bi{ConfigService} which is using \bi{dotenv} package internally.
+    What we get is a way to load .env environment file and access the variables defined in environment.
 
     What we are missing is:
     \begin{itemize}
         \item Checking that all required variables are supplied
         \item That variables conform to the expected type (configuration schema)
-        \item Ability to use multiple .env files so that you can easily configure
-        local development environment (\bi{a}) and local testing environment (\bi{b})
-        for example by having \bi{.env.b} file overriding database name from \bi{.env}
-        used by local development environment.
-        \item Type safety as we need to use string identifiers when getting the
-        values
+        \item Ability to use multiple .env files so that you can easily configure local development environment (\bi{a})
+        and local testing environment (\bi{b}) for example by having \bi{.env.b} file overriding database name
+        from \bi{.env} used by local development environment.
+        \item Type safety as we need to use string identifiers when getting the values
     \end{itemize}
 
-    Package \href{https://www.npmjs.com/package/convict}{convict} has almost all
-    of the above but has a requirement that each setting has default value
-    which will not fail the startup if required variable is not found in
+    Package \href{https://www.npmjs.com/package/convict}{convict} has almost all of the above but has a requirement
+    that each setting has default value which will not fail the startup if required variable is not found in
     environment variables.
 
     \subsection{Zeddy Config}\label{subsec:zeddy-config}
-    Zeddy Config is my \href{https://www.npmjs.com/package/zeddy-config}{library}
-    heavily inspired by \href{https://www.npmjs.com/package/convict}{convict} but offers
-    type safety without default values and is offering just enough functionality
-    for any app.
-    This package also provides variable loading from the \bi{.env}
-    and \bi{.env.env-name} files with the \bi{dotenvize} method.
-    With this simple
-    packages we cover all missing elements for good config:
+    Zeddy Config is my \href{https://www.npmjs.com/package/zeddy-config}{library} heavily inspired by
+    \href{https://www.npmjs.com/package/convict}{convict} but offers type safety without default values and is
+    offering just enough functionality for any app.
+    This package also provides variable loading from the \bi{.env} and \bi{.env.env-name} files with the \bi{dotenvize} method.
+    With this simple package we cover all missing elements for good config:
     \begin{itemize}
         \item Single method load the environment variables into JS variable.
         \item Validation of the configuration schema.
@@ -179,121 +149,12 @@ export const config = configz({
 
 
     \section{Exceptions and errors}\label{sec:exceptions-and-errors}
-
-    Usually people use one or the other term to represent both errors and exceptions
-    but these terms, while both having the same root of something unexpected occurred,
-    have a difference that exceptions can be handled, while error shouldn't be handled.
-
-    For example, if we try to open a file which does not exist we should get an
-    FileNotFoundException exception.
-    Normal application will handle that exception to
-    inform the user about missing file and continue working normally.
-
-    Errors on the other way prevent the program from running or even compiling.
-    One of the frequent errors is SyntaxError which happens when we don't follow
-    language constructs such as using undeclared variable or misspelling the keywords.
-    This type of error is also called compile time error as it is thrown
-    when compiling the application.
-    Other type of errors are runtime errors
-    which happen during the application run.
-    Usually these errors would lead to
-    app ending or restarting.
-    For example if we do not have enough memory on
-    the system we will get OutOfMemoryError, and best the app can do is to end/restart.
-
-    \subsection{REST Api Errors/Exceptions and HTTP Status Codes}
-    \label{subsec:rest-api-errors/exceptions-and-http-status-codes}
-
-    HTTP Status Codes are defined in \href{https://httpwg.org/specs/rfc9110.html#overview.of.status.codes}{RFC 9110}
-    which groups the statuses codes (100-599) in five categories:
-    \begin{itemize}
-        \item 100--199 are informational codes (101 Switching Protocols)
-        \item 200--299 are success codes (200 OK)
-        \item 300--399 are redirect codes (301 Moved Permanently)
-        \item 400--499 are client error code (404 Not Found)
-        \item 500--599 are server error code (500 Internal Server Error)
-    \end{itemize}
-
-    REST APIs are able to return the result of the action or error/exception
-    and most frameworks like NestJS are tying the errors with server codes.
-    One example would be if we search the database by id and don't find the
-    object we can throw NestJS NotFoundException which will use 404 http status code.
-
-    \subsection{Recommendations for HTTP call errors}\label{subsec:recommendations-for-http-call-errors}
-
-    My recommendation is to use only two HTTP Status Codes:
-    \begin{itemize}
-        \item 400 for all exceptions where client retries would not change the outcome.
-        This should represent that user has sent wrong data or not allowed to do something.
-        If something doesn't change this request would never succeed.
-        \item 500 for all errors where client retries could succeed after some timeout.
-        This might be thrown when cache is refreshing, or there is loss of network connectivity
-        to some other services.
-    \end{itemize}
-
-    When exception is being returned to the HTTP client, in addition to HTTP Status Code,
-    we also need to return more data about the error in response body.
-    These response bodies should be more or less detailed depending on the environment zone the app is running.
-    In \bi{prod zone} we should output only exception id and generic name of the error,
-    while in \bi{dev zone} we can additionally send more data or stack trace.
-
-    Also, JavaScript and NestJS error implementation provide short description of the exception/error,
-    with \bi{message} property - which is not recommended.
-    Having many exceptions/errors with unique name is better for responding and providing proper error description with
-    the translation tooling.
-    Having errors translated on the client (frontend) is much preferable as the clients/frontends are translated more often than backends.
-    We have frequently seen
-    multilingual content on websites but rarely (if ever) translated versions of endpoint URLs or
-    POST data names.
-    Additional point is that if we have multiple clients (web and mobile app)
-    each of those can define their own user presentation of that error which is not possible
-    with fixed description returning from backend.
-
-    Fine-grained exception/errors are preferred and naming should reflect those, and build
-    from something larger to something smaller.
-    For example \bi{AuthorizationTokenBearerMissingException},
-    \bi{AuthorizationTokenExpiredException}, \ldots If possible we should group certain exceptions into
-    one by providing additional parameters as we have entity field in \bi{EntityNotFoundException(\{entity: User, id: '1234'\})}
-    and \bi{EntityNotFoundException(\{entity: UserProfile, id: '1234'\})}.
-
-    Exceptions/errors should be easy to make, and they should be grouped together with relevant
-    errors instead of all in one place or each for it self.
-
-    \subsection{Zeddy Errors}\label{subsec:zeddy-errors}
-
-    Zeddy Errors is npm package \href{https://www.npmjs.com/package/zeddy-errors}{https://www.npmjs.com/package/zeddy-errors} that follows recommendations 
-    from \hyperref[sec:REST Api Errors/Exceptions and HTTP Status Codes]{REST Api Errors/Exceptions and HTTP Status Codes}.
-    It features most simple creation of new errors, allows groups of errors, ease of import,
-    type safety and ease of use.
-    It has 0 dependencies except TypeScript and integrates well into
-    any existing frameworks.
-    There is a sample NestJS project available at \href{https://github.com/zveljkovic/zeddy-errors-example}(https://github.com/zveljkovic/zeddy-errors-example).
-
-    Usage is simple, export error group with defined errors with optional generic argument about the data type,
-    import it where needed and throw the new instance.
-
-    \begin{minted}{javascript}
-// file: shared.errors.ts
-export const SharedErrors = {
-  EntityNotFound: class extends ExceptionBase<{ type: string; id: number }> {},
-  JwtTokenMissingBearer: class extends ExceptionBase{},
-  IntentionalError: class extends ErrorBase<{ reason: string }> {},
-};
-
-// file: some.service.ts
-import {SharedErrors} from './shared.errors';
-//...
-throw new SharedErrors.IntentionalError({reason: "Testing errors"});
-throw new SharedErrors.JwtTokenMissingBearer();
-
-    \end{minted}
-
+    \input{_exceptions-and-errors}
 
     \section{Logging}\label{sec:logging}
 
     Logging is one of the most basic but very important aspect of application development.
-    Logs provide the insight into application processing, helps you reproduce the bugs,
-    and can be used as visible comments.
+    Logs provide the insight into application processing, helps you reproduce the bugs, and can be used as visible comments.
 
     Modern logging should be:
     \begin{itemize}
@@ -302,17 +163,14 @@ throw new SharedErrors.JwtTokenMissingBearer();
         \item Centrally configured.
         Logging configuration should live in one file, so it is easy to modify and extend.
         \item Optimized for different environments.
-        For example on local environments we want
-        logs to be in plain format printed to standard output, so developers can read them,
-        but for remote environments logs can be in json format for shipping to ELK stack for example.
+        For example on local environments we want logs to be in plain format printed to standard output,
+        so developers can read them, but for remote environments logs can be in json format for shipping
+        to ELK stack for example.
         \item Adaptable.
         Logger should be easy to adapt to specific services.
-        For example
-        integrating with Azure's App Insights.
+        For example integrating with Azure's App Insights.
         \item Versatile.
         It's not rare that logs need to be sent to multiple services.
-        Sending
-        logs to ELK stack for long-lasting storage and to Azure AppInsights is common practice.
+        Sending logs to ELK stack for long-lasting storage and to Azure AppInsights is common practice.
     \end{itemize}
 
-    Many of standard libraries
