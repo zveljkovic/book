@@ -6,13 +6,13 @@ common types of errors during architecture design.
 Over-engineering: this happens when solution is unnecessarily complicated.
 There are many examples of this but most common ones are:
 \begin{itemize}
-  \item designing for multiple databases in agnostic way when 99% of projects never switch the database type (i.e. going from Postgresql to Sql Server).
+  \item designing for multiple databases in agnostic way when 99\% of projects never switch the database type (i.e.\ going from Postgresql to Sql Server).
   \item using microservice architecture where hidden cost of included complexity on both developer and devops side is not
   properly compared to the benefits of this approach.
   \item designing for infinite customisation of the components.
 \end{itemize}
 
-Under-engineering (Hacky): this happens when solution is not using parts for intended purposes but is tried to repurpose
+Under-engineering (Hacky): this happens when solution is not using parts for intended purposes but is trying to repurpose
 existing ones in different way (which often fails).
 Some of these are:
 \begin{itemize}
@@ -25,14 +25,14 @@ Some of these are:
 This section will focus on most commonly used architectural practices for building NestJS based backend applications
 in increasing complexity.
 
-\section{Arch: As Simple As It Gets}\label{sec:arch-as-simple-as-it-gets}
+\section{As Simple As It Gets}\label{sec:arch-as-simple-as-it-gets}
 
 The most basic setup we can have is to have one module that has one controller defined.
 All the code gets written in the controller method.
 This is only suitable for quick POC maybe when testing new libraries and later thrown away.
 But even then it is a questionable practice as it might be easier to test it in main project.
 
-\section{Arch: One module project based with services based on db entities}\label{sec:arch-om-db}
+\section{One module project based with services based on db entities}\label{sec:arch-om-db}
 
 One module project will have no modularization but can have multiple controllers, services and other NestJS components.
 Modularization is emulated with the folder structure and this works really well for POC or small projects.
@@ -44,7 +44,7 @@ all attributes to be specified.
 Later, for example if we wanted to send a confirmation email everytime user is updated we would have to find all places
 where UserRepository was used and add code there.
 
-\section{Arch: Multi module project with services based on db entities}\label{sec:arch-mm-db}
+\section{Multi module project with services based on db entities}\label{sec:arch-mm-db}
 
 An expansion on previous architecture is that now we are using multiple modules properly
 (by forbidding imports of classes that are not exported from modules), but we still have groupings around entities.
@@ -55,12 +55,12 @@ For simplistic example we can say that UserService and WorkService have a cyclic
 when WorkService needs UserService to fetch the user, while UserService in deleteUser method needs WorkService
 to remove all the Work entities for current user.
 
-\section{Arch: Multi module project with services based on Domain Driven Design}\label{sec:arch-mm-ddd}
+\section{Multi module project with services based on Domain Driven Design}\label{sec:arch-mm-ddd}
 
 To solve the previous issue we can try the DDD and model services around business domains, and that might help a bit,
 but when domain interactions become more complex we might still experience the cyclic dependency issue.
 
-\section{Arch: Multi module project with services based on Domain Driven Design plus events}\label{sec:arch-mm-ddd-events}
+\section{Multi module project with services based on Domain Driven Design plus events}\label{sec:arch-mm-ddd-events}
 
 To fight cyclic dependencies arising from large service classes, and make them independent of other modules we might
 start to utilize internal events.
@@ -76,5 +76,82 @@ This will help greatly in decoupling the modules and making app more maintainabl
   But it's not only that, why do we need to instantiate a service if it is used in only one method.
   We need a new (old) approach.
 \end{tcolorbox}
+
+
+\section{Multi module project with CQRS}\label{sec:arch-mm-cqrs}
+
+There is another approach to fight large dependencies - CQRS\@.
+CQRS stands for command query responsibility segregation and this pattern makes distinction (responsibility segregation)
+between commands and queries.
+Commands are used to mutate data (i.e.\ creates/updates) while queries are used where data is not updated
+(i.e.\ retrieving objects).
+This Nest.JS concept uses CommandBus/QueryBus pattern to run the commands/queries, but doesn't enforce any of the rules.
+Queries executed this way can still mutate data so framework still expect the developer to follow the guidelines.
+
+This pattern helps with scoping dependencies to single actions (command or query) as they are separate from the
+rest of the actions even for the same resource.
+Sample calling of the command and query is listed below, please see whole example project at
+\href{htthttps://github.com/zveljkovic/book-cqrs-example}{https://github.com/zveljkovic/book-cqrs-example}.
+
+\begin{minted}[xleftmargin=20pt,linenos]{javascript}
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { GetAllUsersQuery } from '../commands/get-all-users-query';
+import { User } from '../entity/user';
+import { CreateUserCommand } from '../commands/create-user-command';
+
+@Controller('users')
+export class UserController {
+  constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
+
+  @Get()
+  async findAll() {
+    return await this.queryBus.execute<GetAllUsersQuery, User[]>(
+      new GetAllUsersQuery(),
+    );
+  }
+
+  @Post()
+  async create(@Body('id') id: number, @Body('name') name: string) {
+    return await this.commandBus.execute<CreateUserCommand, User>(
+      new CreateUserCommand(id, name),
+    );
+  }
+}
+
+\end{minted}
+
+On line 3 and 5 we include empty POJO class, on line 9 we depend on the \bi{CommandBus} and \bi{QueryBus}
+but not on the actual app dependencies.
+This setup makes it possible that actions depend only on their own dependencies unlike services classes that
+have dependencies for all of their methods.
+
+Action handler for CreateUserCommand is displayed below to showcase the actual ICommandHandler interface.
+
+\begin{minted}[xleftmargin=20pt,linenos]{javascript}
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
+import { UserStore } from '../store/user-store';
+import { User } from '../entity/user';
+import { UserCreatedEvent } from '../events/user-created-event';
+import { CreateUserCommand } from './create-user-command';
+
+@CommandHandler(CreateUserCommand)
+export class CreateUserCommandHandler
+implements ICommandHandler<CreateUserCommand>
+  {
+  constructor(private userStore: UserStore, private eventBus: EventBus) {}
+
+  async execute(command: CreateUserCommand) {
+    const { id, name } = command;
+    const user = new User();
+    user.id = id;
+    user.name = name;
+    this.userStore.addUser(user);
+    this.eventBus.publish(new UserCreatedEvent(user));
+    return user;
+  }
+}
+\end{minted}
+
 
 

@@ -1,23 +1,3 @@
-%! suppress = Ellipsis
-%! suppress = Ellipsis
-%! suppress = Ellipsis
-%! suppress = Ellipsis
-======================================================================
-starting package maintenance\ldots
-installation directory: C:\Users\ext.z.veljkovic\AppData\Local\Programs\MiKTeX
-package repository: https://mirrors.nxthost.com/ctan/systems/win32/miktex/tm/packages/
-visiting repository https://mirrors.nxthost.com/ctan/systems/win32/miktex/tm/packages/...
-repository type: remote package repository
-loading package repository manifest...
-downloading https://mirrors.nxthost.com/ctan/systems/win32/miktex/tm/packages/miktex-zzdb1-2.9.tar.lzma...
-0.30 MB, 6.87 Mbit/s
-package repository digest: e2dc321671bd0bdfeadc059a12ad0ab2
-going to download 69253 bytes
-going to install 43 file(s) (1 package(s))
-downloading https://mirrors.nxthost.com/ctan/systems/win32/miktex/tm/packages/latexindent.tar.lzma...
-0.07 MB, 7.49 Mbit/s
-extracting files from latexindent.tar.lzma\ldots
-======================================================================
 \documentclass[lang=en,color=green]{elegantbook}
 \title{Pragmatic Node.js development}
 \subtitle{Primer in Nest.js}
@@ -25,9 +5,9 @@ extracting files from latexindent.tar.lzma\ldots
 \author{Zlatibor Zed Veljkovic}
 \date{June 5, 2022}
 \version{0.1}
-\bioinfo{bioinfo 1}{bioinfo 2}
+\bioinfo{Email}{zveljkovic@hotmail.com}
 
-\extrainfo{Some extra info}
+\extrainfo{I had more time so it is short}
 
 \setcounter{tocdepth}{3}
 
@@ -40,21 +20,24 @@ extracting files from latexindent.tar.lzma\ldots
 % 本文档命令
 \usepackage{array}
 \usepackage{enumitem}
-\usepackage{minted}
+\usepackage[outputdir=./auxil]{minted}
 \usepackage{mdframed}
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{color}
 
+
 \newcommand{\ccr}[1]{\makecell{{\color{#1}\rule{1cm}{1cm}}}}
 \newcommand{\ci}{\mintinline{bat}}
 \newcommand{\bi}[1]{\textit{\textbf{#1}}}
 \setmintedinline{bgcolor=codebg}
+\AtBeginEnvironment{minted}{%
+    \renewcommand{\fcolorbox}[4][]{#4}}
+
 % 修改标题页的橙色带 
 % \definecolor{customcolor}{RGB}{32,178,170}
 % \colorlet{coverlinecolor}{customcolor}
 \begin{document}
-
     \maketitle
     \frontmatter
 

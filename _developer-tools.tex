@@ -93,11 +93,15 @@ downloading, installing and configuring software.
 Later it also helps with keeping the installed software up to date or with removal.
 
 \begin{itemize}[leftmargin=*]
-    \item Chocolatey is the most prominent Windows package manager.
+    \item Windows: Chocolatey is the most prominent package manager.
     It can be downloaded from \href{https://chocolatey.org/}{https://chocolatey.org/}.
-          Searching for packages is done with \mintinline{bat}{choco search postgresql}
-          and installation with \mintinline{bat}{choco install postgresql} will install Postgres.
-    \item Homebrew is a Mac OS X package manager written in Ruby.
+    Searching for packages is done with \mintinline{bat}{choco search postgresql}
+    and installation with \mintinline{bat}{choco install postgresql} will install Postgres.
+    \item Windows: Winget is the alternative package manager created by Microsoft.
+    It can be downloaded from \href{https://chocolatey.org/}{https://chocolatey.org/}.
+    Searching for packages is done with \mintinline{bat}{winget search postgres}
+    and installation with \mintinline{bat}{winget install postgresql} will install Postgres.
+    \item Mac OS X: Homebrew is a package manager written in Ruby.
           It can be downloaded from \href{https://brew.sh}{https://brew.sh}.
           Command \mintinline{bat}{brew search postgres}
           is used to search for package while \mintinline{bat}{brew install postgresql} to install a package.
