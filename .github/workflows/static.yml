@@ -36,14 +36,14 @@ jobs:
       - name: Read book version into ENV
         run: echo "book_version=$(cat book.tex | grep \version | grep -oP '(?<={).*(?=})')" >> "$GITHUB_ENV"
       - name: Copy latest build to docs dir
-        run: cp ./out/book.pdf ./docs/pragmatic-nodejs-development-primer-in-nestjs-$(book_version).pdf
+        run: cp ./out/book.pdf ./docs/pragmatic-nodejs-development-primer-in-nestjs-${book_version}.pdf
       - name: Update the link in index.html file
         run: sed -i 's/BOOK_VERSION/'"$book_version"'/' docs/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
           # Upload entire repository
-          path: '.'
+          path: 'docs'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
